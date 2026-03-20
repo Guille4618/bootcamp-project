@@ -1,0 +1,235 @@
+/* ===========================
+   VARIABLES CSS
+=========================== */
+:root{
+    /* Colores */
+    --color-primario: #4a90e2;
+    --color-secundario: #357abd;
+    --color-fondo: #f5f5f5;
+    --color-blanco: #fffffff;
+    --color-texto: #3333333;
+    --color-borde: #dddddd;
+    --color-sombra: rgba(0, 0, 0, 0.1)
+    --color-completada: #27ae60;
+    --color-eliminar: #e74c3c;
+
+    /* Tipografía */
+    --fuente-principal: Arial, sans-serif;
+    --tamanio-nase: 16px;
+    --tamanio-h1: 2rem;
+    --tamanio-h2: 1.5rem;
+
+    /* Espaciado*/
+    --espaciado-pequeño: 8px;
+    --espaciado-medio: 16px;
+    --espaciaddo-grande: 24px;
+
+
+}
+
+/* ===========================
+   RESET CSS
+=========================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--fuente-principal) ;
+    font-size: var(--tamanio-nase) ;
+    background-color: var(--color-fondo) ;
+    color: var(--color-texto)
+}
+
+/* ===========================
+   CABECERA
+=========================== */
+header {
+    background-color: var(--color-primario) ;
+    color: var(--color-blanco) ;
+    padding: var(--espaciaddo-grande) ;
+    text-align: center;
+}
+
+header h1 ¨{
+    font-size:  var(--tamanio-h1);
+}
+
+/* ===========================
+   LAYOUT PRINCIPAL CON FLEXBOX
+=========================== */
+
+body ¨{
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    display: flex;
+    flex: 1;
+    gap: var(--espaciaddo-grande);
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* ===========================
+   FORMULARIO
+=========================== */
+
+section ¨{
+    flex: 1;
+}
+
+section h2 ¨{
+    font-size: var(--tamanio-h2);
+    margin-bottom: var(--espaciado-medio);
+    color: var(--color-primario);
+}
+
+form {
+    display: flex;
+    gap: var(--espaciado-pequeño);
+    margin-bottom: var(--espaciaddo-grande);
+}
+
+label {
+    display: block;
+    margin-bottom: var(--espaciado-pequeño);
+    font-size: var(--tamanio-nase);
+}
+
+input[type="text"] {
+    flex: 1 ;
+    padding: var(--espaciado-pequeño) var(--espaciado-medio);
+    border: 1px solid var(--color-borde);
+    border-radius: 4px ;
+    outline: none;
+}
+
+/* Focus en inputs */
+input[type="text"]:focus {
+    border-color: var(--color-primario);
+    box-shadow: 0 0 4px var(--color-sombra);
+}
+
+/* ===========================
+   BOTONES
+=========================== */
+button {
+    padding: var(--espaciado-pequeño) var(--espaciado-medio);
+    font-size: var(--tamanio-base);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: var(--color-primario);
+    color: var(--color-blanco);
+    transition: background-color 0.2s;
+}
+
+/* Hover en botones */
+button:hover {
+    background-color: var(--color-secundario);
+}
+
+/* Focus en botones */
+button:focus {
+    outline: 2px solid var(--color-primario);
+    outline-offset: 2px;
+}
+
+.btn-eliminar {
+    background-color: var(--color-eliminar);
+}
+
+.btn-eliminar:hover {
+    background-color: #c0392b;
+}
+
+/* ===========================
+   TARJETAS DE TAREAS
+=========================== */
+#lista-tareas {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--espaciado-pequeño);
+}
+
+#lista-tareas li {
+    display: flex;
+    align-items: center;
+    gap: var(--espaciado-medio);
+    background-color: var(--color-blanco);
+    border: 1px solid var(--color-borde);
+    border-radius: 8px;
+    padding: var(--espaciado-medio);
+    box-shadow: 0 2px 4px var(--color-sombra);
+}
+
+#lista-tareas li .nombre-tarea {
+    flex: 1;
+    font-size: var(--tamanio-base);
+}
+
+/* ===========================
+   FOOTER
+=========================== */
+footer {
+    background-color: var(--color-primario);
+    color: var(--color-blanco);
+    text-align: center;
+    padding: var(--espaciado-medio);
+}
+
+/* ===========================
+   RESPONSIVE - MEDIA QUERIES
+=========================== */
+
+/* Pantallas medianas - tablets (menos de 768px) */
+@media (max-width: 768px) {
+        /* El layout pasa de horizontal a vertical */
+        main {
+            flex-direction: column;
+            padding: var(--espaciado-medio);
+        }
+
+            /* El panel de estadísticas baja debajo del contenido */
+        aside {
+            width: 100%;
+            min-width: 100%;
+            order: 2;
+        }
+            /* El contenido principal va arriba */
+        section {
+            order: 1;
+        }
+}
+
+/* Pantallas pequeñas - móviles (menos de 480px) */
+@media (max-width: 480px) {
+        /* Cabecera más pequeña */
+        header{
+            padding: var(--espaciado-medio);
+        }
+        header h1{
+            font-size: 1.5rem;
+        }
+        /*Formulario en columna*/
+        form{
+            flex-direction: column;
+        }
+        /*Botón ocupa todo el ancho*/
+        form button {
+            width: 100%;
+        }
+        /*Input ocupa el ancho*/
+        input[type="text"] {
+            flex-wrap: wrap;
+            gap: var(--espaciado-pequeño);
+        }
+}

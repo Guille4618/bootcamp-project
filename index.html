@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    <style>
+    /* Foco visible para navegación con teclado */
+    *:focus {
+        outline: 3px solid #4a90e2;
+        outline-offset: 2px;
+    }
+</style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 min-h-screen flex flex-col">
+
+    <!-- Cabecera -->
+    <header class="bg-blue-500 dark:bg-blue-900 text-white p-6 text-center">
+        <h1 class="text-3xl font-bold">TaskFlow</h1>
+        <!-- Botón modo oscuro -->
+        <button id="btn-dark-mode" aria-label="Activar o desactivar modo oscuro" class="mt-2 px-4 py-2 bg-blue-700 dark:bg-blue-500 rounded hover:bg-blue-800 text-sm">
+            🌙 Modo oscuro
+        </button>
+    </header>
+
+    <!-- Contenido principal -->
+    <main class="flex flex-col md:flex-row flex-1 gap-6 p-6 max-w-6xl mx-auto w-full">
+
+        <!-- Secciones izquierda -->
+        <div class="flex-1 flex flex-col gap-6">
+
+            <!-- Formulario -->
+            <section class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow">
+                <h2 class="text-xl font-semibold text-blue-500 mb-4">Añadir tarea</h2>
+                <form id="form-tarea" class="flex gap-2">
+                    <label for="inputTarea" class="sr-only">Nueva tarea</label>
+                    <input 
+                        type="text" 
+                        id="inputTarea" 
+                        name="inputTarea" 
+                        placeholder="Escribe una tarea..." 
+                        required
+                        class="flex-1 px-4 py-2 text-base border border-gray-300 rounded focus:outline-none focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                    >
+                    <button 
+                        type="submit"
+                        aria-label="Añadir nueva tarea"
+                        class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                        Añadir
+                    </button>
+                </form>
+            </section>
+
+            <!-- Lista de tareas -->
+            <section class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow">
+                <h2 class="text-xl font-semibold text-blue-500 mb-4">Lista de tareas</h2>
+
+                <!-- Filtros -->
+                <div id="filtros" class="flex gap-2 mb-4 flex-wrap">
+                    <button id="btn-todas" aria-label="Mostrar todas las tareas" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Todas</button>
+                    <button id="btn-pendientes" aria-label="Mostrar tareas pendientes" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Pendientes</button>
+                    <button id="btn-completadas" aria-label="Mostrar tareas completadas" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Completadas</button>
+                </div>
+
+                <!-- Búsqueda -->
+                <div id="busqueda" class="mb-4">
+                    <label for="inputBusqueda" class="block mb-1 text-sm dark:text-white">Buscar tarea:</label>
+                    <input 
+                        type="text" 
+                        id="inputBusqueda" 
+                        placeholder="Buscar..."
+                        aria-label="Buscar tareas por texto"
+                        class="w-full px-4 py-2 text-base border border-gray-300 rounded focus:outline-none focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                    >
+                </div>
+
+                <!-- Botones extra -->
+                <div id="botones-extra" class="flex gap-2 mb-4 flex-wrap">
+                    <button id="btn-completar-todas" aria-label="Marcar todas las tareas como completadas" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">Completar todas</button>
+                    <button id="btn-borrar-completadas" aria-label="Borrar todas las tareas completadas" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">Borrar completadas</button>
+                </div>
+
+                <!-- Lista -->
+                <ul id="lista-tareas" class="flex flex-col gap-2">
+                </ul>
+
+            </section>
+
+        </div>
+
+        <!-- Panel lateral estadísticas -->
+        <aside class="w-full md:w-64 bg-white dark:bg-gray-800 rounded-lg p-6 shadow h-fit">
+            <h2 class="text-xl font-semibold text-blue-500 mb-4">Estadísticas</h2>
+            <p class="mb-2 dark:text-white">Total de tareas: <span id="total" class="font-bold">0</span></p>
+            <p class="mb-2 dark:text-white">Completadas: <span id="completadas" class="font-bold text-green-500">0</span></p>
+            <p class="mb-2 dark:text-white">Pendientes: <span id="pendientes" class="font-bold text-red-500">0</span></p>
+        </aside>
+
+    </main>
+
+    <!-- Plantilla base para cada tarea -->
+    <template id="plantilla-tarea">
+        <li class="flex items-center gap-4 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4 shadow">
+            <input type="checkbox" aria-label="Marcar tarea como completada" class="w-5 h-5 cursor-pointer">
+            <span class="nombre-tarea flex-1 text-base dark:text-white"></span>
+            <button class="btn-eliminar px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm" aria-label="Eliminar tarea">Eliminar</button>
+        </li>
+    </template>
+
+    <!-- Pie de página -->
+    <footer class="bg-blue-500 dark:bg-blue-900 text-white text-center p-4">
+        <p>TaskFlow &copy; 2024</p>
+    </footer>
+
+    <script src="app.js"></script>
+
+</body>
+</html>
