@@ -177,6 +177,64 @@ button:focus {
 }
 
 /* ===========================
+   FECHA LIMITE / ESTADOS
+=========================== */
+#lista-tareas li .fecha-limite {
+    /* Se rellena desde app.js; por defecto está oculto en el template */
+    font-size: 0.875rem;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+#lista-tareas li.tarea-vencida {
+    border-color: #e74c3c;
+    background-color: rgba(231, 76, 60, 0.08);
+}
+
+#lista-tareas li.tarea-vencida .fecha-limite {
+    color: #e74c3c;
+    background-color: rgba(231, 76, 60, 0.12);
+}
+
+#lista-tareas li.tarea-vence-hoy {
+    border-color: #f1c40f;
+    background-color: rgba(241, 196, 15, 0.12);
+}
+
+#lista-tareas li.tarea-bloqueada {
+    border-color: #7c3aed;
+    background-color: rgba(124, 58, 237, 0.08);
+}
+
+#lista-tareas li.tarea-vence-hoy .fecha-limite {
+    color: #d97706;
+    background-color: rgba(217, 119, 6, 0.14);
+}
+
+html.dark #lista-tareas li.tarea-vencida {
+    border-color: #e74c3c;
+    background-color: rgba(231, 76, 60, 0.18);
+}
+
+html.dark #lista-tareas li.tarea-vencida .fecha-limite {
+    background-color: rgba(231, 76, 60, 0.25);
+}
+
+html.dark #lista-tareas li.tarea-vence-hoy {
+    border-color: #f59e0b;
+    background-color: rgba(245, 158, 11, 0.18);
+}
+
+html.dark #lista-tareas li.tarea-vence-hoy .fecha-limite {
+    background-color: rgba(245, 158, 11, 0.25);
+}
+
+html.dark #lista-tareas li.tarea-bloqueada {
+    border-color: #a78bfa;
+    background-color: rgba(167, 139, 250, 0.20);
+}
+
+/* ===========================
    FOOTER
 =========================== */
 footer {
