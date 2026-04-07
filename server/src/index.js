@@ -1,0 +1,39 @@
+const express = require('express');
+const cors = require('cors');
+const { PORT } = require('./config/env');
+
+const app = express();
+
+//Miiddlewares globales
+app.use(cors());
+app.use(express.json());
+
+//Middleware de adutoría
+const loggerAcademico = (req, res, next) => {
+    const inicio = performance.now();
+    res.on('finish', () => {
+        const duracion = performance.now() - inicio;
+        console.log(`[${req.method}] ${req.originalUrl} - Estado: ${res.statusCode} (${duracion.toFixed(2)}ms)`);
+    });
+    next();
+};
+app.use(loggerAcademico);
+
+//Rutas
+const taskRoutes = require('./routes/task.routes');
+app.use('/api/tasks', taskRoutes);
+
+//Middleware global de manejo de errores
+app.use((err, req, res, next) => {
+    if (err.message === 'NOT_FOUND') {
+        return res.status(404).json({ error: 'Tarea no encontrada' });
+    }
+    console.error(err);
+    return res.status(500).json({ error: 'Error interno del servidor' });
+});
+
+
+//Arrancar el servidor
+app.listen(PORT, () => {
+    console.log(`Servidor corriendo en el puerto ${PORT}`);
+});

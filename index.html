@@ -20,8 +20,8 @@
 <body class="bg-gray-100 dark:bg-gray-900 min-h-screen flex flex-col">
 
     <!-- Cabecera -->
-    <header class="bg-blue-500 dark:bg-blue-900 text-white p-6 text-center relative">
-        <h1 class="text-3xl font-bold">TaskFlow</h1>
+    <header class="bg-blue-500 dark:bg-blue-900 text-white p-4 md:p-6 text-center relative">
+        <h1 class="text-2xl md:text-3xl font-bold">TaskFlow</h1>
     </header>
 
     <!-- Botón modo oscuro -->
@@ -30,16 +30,18 @@
     </button>
 
     <!-- Contenido principal -->
-    <main class="flex flex-col md:flex-row flex-1 gap-6 p-6 max-w-6xl mx-auto w-full">
+    <main class="flex flex-col md:flex-row flex-1 gap-4 md:gap-6 p-4 md:p-6 max-w-6xl mx-auto w-full">
 
         <!-- Secciones izquierda -->
-        <div class="flex-1 flex flex-col gap-6">
+        <div class="flex-1 flex flex-col gap-4 md:gap-6">
 
             <!-- Formulario -->
-            <section class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow">
+            <section class="bg-white dark:bg-gray-800 rounded-lg p-4 md:p-6 shadow">
                 <h2 class="text-xl font-semibold text-blue-500 mb-4">Añadir tarea</h2>
                 <form id="form-tarea" class="flex flex-col gap-2" novalidate>
-                    <div class="flex gap-2">
+
+                    <!-- Input principal -->
+                    <div class="flex flex-col sm:flex-row gap-2">
                         <label for="inputTarea" class="sr-only">Nueva tarea</label>
                         <input 
                             type="text" 
@@ -49,47 +51,51 @@
                             aria-describedby="error-tarea"
                             class="flex-1 px-4 py-2 text-base border border-gray-300 rounded focus:outline-none focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:border-gray-600"
                         >
-                        <select 
-                            id="selectPrioridad"
-                            class="px-4 py-2 text-base border border-gray-300 rounded focus:outline-none focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:border-gray-600"
-                        >
-                            <option value="alta">🔴 Alta</option>
-                            <option value="media" selected>🟡 Media</option>
-                            <option value="baja">🟢 Baja</option>
-                        </select>
-                        <button 
-                            type="submit"
-                            aria-label="Añadir nueva tarea"
-                            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                            Añadir
-                        </button>
+                        <div class="flex gap-2">
+                            <select 
+                                id="selectPrioridad"
+                                class="flex-1 sm:flex-none px-3 py-2 text-sm md:text-base border border-gray-300 rounded focus:outline-none focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                            >
+                                <option value="alta">🔴 Alta</option>
+                                <option value="media" selected>🟡 Media</option>
+                                <option value="baja">🟢 Baja</option>
+                            </select>
+                            <button 
+                                type="submit"
+                                aria-label="Añadir nueva tarea"
+                                class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 whitespace-nowrap"
+                            >
+                                Añadir
+                            </button>
+                        </div>
                     </div>
+
                     <!-- Dependencia -->
-<div class="flex gap-2 items-center">
-    <label for="selectDependencia" class="text-sm dark:text-white whitespace-nowrap">Depende de:</label>
-    <select
-        id="selectDependencia"
-        name="selectDependencia"
-        aria-label="Dependencia opcional"
-        class="flex-1 px-4 py-2 text-base border border-gray-300 rounded focus:outline-none focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:border-gray-600"
-    >
-        <option value="">No depende de nadie</option>
-    </select>
-</div>
+                    <div class="flex flex-col sm:flex-row gap-2 items-start sm:items-center">
+                        <label for="selectDependencia" class="text-sm dark:text-white whitespace-nowrap">Depende de:</label>
+                        <select
+                            id="selectDependencia"
+                            name="selectDependencia"
+                            aria-label="Dependencia opcional"
+                            class="w-full flex-1 px-4 py-2 text-sm md:text-base border border-gray-300 rounded focus:outline-none focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                        >
+                            <option value="">No depende de nadie</option>
+                        </select>
+                    </div>
+
                     <p id="error-tarea" class="text-sm text-red-600 dark:text-red-400 min-h-[1.25rem]" aria-live="polite"></p>
                 </form>
             </section>
 
             <!-- Lista de tareas -->
-            <section class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow">
+            <section class="bg-white dark:bg-gray-800 rounded-lg p-4 md:p-6 shadow">
                 <h2 class="text-xl font-semibold text-blue-500 mb-4">Lista de tareas</h2>
 
                 <!-- Filtros -->
                 <div id="filtros" class="flex gap-2 mb-4 flex-wrap">
-                    <button id="btn-todas" aria-label="Mostrar todas las tareas" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Todas</button>
-                    <button id="btn-pendientes" aria-label="Mostrar tareas pendientes" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Pendientes</button>
-                    <button id="btn-completadas" aria-label="Mostrar tareas completadas" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Completadas</button>
+                    <button id="btn-todas" aria-label="Mostrar todas las tareas" class="px-3 py-2 text-sm md:px-4 md:text-base bg-blue-500 text-white rounded hover:bg-blue-600">Todas</button>
+                    <button id="btn-pendientes" aria-label="Mostrar tareas pendientes" class="px-3 py-2 text-sm md:px-4 md:text-base bg-blue-500 text-white rounded hover:bg-blue-600">Pendientes</button>
+                    <button id="btn-completadas" aria-label="Mostrar tareas completadas" class="px-3 py-2 text-sm md:px-4 md:text-base bg-blue-500 text-white rounded hover:bg-blue-600">Completadas</button>
                 </div>
 
                 <!-- Búsqueda -->
@@ -106,8 +112,8 @@
 
                 <!-- Botones extra -->
                 <div id="botones-extra" class="flex gap-2 mb-4 flex-wrap">
-                    <button id="btn-completar-todas" aria-label="Marcar todas las tareas como completadas" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">Completar todas</button>
-                    <button id="btn-borrar-completadas" aria-label="Borrar todas las tareas completadas" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">Borrar completadas</button>
+                    <button id="btn-completar-todas" aria-label="Marcar todas las tareas como completadas" class="px-3 py-2 text-sm md:px-4 md:text-base bg-green-500 text-white rounded hover:bg-green-600">Completar todas</button>
+                    <button id="btn-borrar-completadas" aria-label="Borrar todas las tareas completadas" class="px-3 py-2 text-sm md:px-4 md:text-base bg-red-500 text-white rounded hover:bg-red-600">Borrar completadas</button>
                 </div>
 
                 <!-- Lista -->
@@ -119,7 +125,7 @@
         </div>
 
         <!-- Panel lateral estadísticas -->
-        <aside class="w-full md:w-64 bg-white dark:bg-gray-800 rounded-lg p-6 shadow h-fit md:ml-auto">
+        <aside class="w-full md:w-64 bg-white dark:bg-gray-800 rounded-lg p-4 md:p-6 shadow h-fit">
             <h2 class="text-xl font-semibold text-blue-500 mb-4">Estadísticas</h2>
             <p class="mb-2 dark:text-white">Total de tareas: <span id="total" class="font-bold">0</span></p>
             <p class="mb-2 dark:text-white">Completadas: <span id="completadas" class="font-bold text-green-500">0</span></p>
@@ -141,11 +147,11 @@
 
     <!-- Plantilla base para cada tarea -->
     <template id="plantilla-tarea">
-        <li class="flex items-center gap-4 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4 shadow">
-            <input type="checkbox" aria-label="Marcar tarea como completada" class="w-5 h-5 cursor-pointer">
-            <span class="nombre-tarea flex-1 text-base dark:text-white"></span>
-            <span class="etiqueta-prioridad text-xs px-2 py-1 rounded"></span>
-            <button class="btn-eliminar px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm" aria-label="Eliminar tarea">Eliminar</button>
+        <li class="flex flex-wrap items-center gap-2 md:gap-4 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-3 md:p-4 shadow">
+            <input type="checkbox" aria-label="Marcar tarea como completada" class="w-5 h-5 cursor-pointer flex-shrink-0">
+            <span class="nombre-tarea flex-1 text-sm md:text-base dark:text-white min-w-0 break-words"></span>
+            <span class="etiqueta-prioridad text-xs px-2 py-1 rounded flex-shrink-0"></span>
+            <button class="btn-eliminar px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm flex-shrink-0" aria-label="Eliminar tarea">Eliminar</button>
         </li>
     </template>
 
