@@ -73,23 +73,6 @@ function actualizarSelectDependencia() {
 }
 
 // ===========================
-// CREAR UNA TAREA
-// ===========================
-function crearTarea(titulo, prioridad, dueDate, dependsOn) {
-    return {
-        id: typeof crypto !== "undefined" && crypto.randomUUID
-            ? crypto.randomUUID()
-            : Date.now() + Math.random().toString(36),
-        title: titulo,
-        completed: false,
-        createdAt: new Date().toLocaleDateString(),
-        priority: prioridad || "media",
-        dueDate: dueDate || null,
-        dependsOn: dependsOn || null
-    };
-}
-
-// ===========================
 // ORDENAR POR PRIORIDAD
 // ===========================
 function ordenarPorPrioridad() {
@@ -102,40 +85,62 @@ function ordenarPorPrioridad() {
 }
 
 // ===========================
+// ESTADOS DE CARGA Y ERROR
+// ===========================
+function mostrarCargando() {
+    const lista = document.getElementById("lista-tareas");
+    if (!lista) return;
+    lista.innerHTML = "<p class='text-center text-gray-500 py-4'>Cargando tareas...</p>";
+}
+
+function mostrarErrorRed(mensaje) {
+    const lista = document.getElementById("lista-tareas");
+    if (!lista) return;
+    lista.innerHTML = "<p class='text-center text-red-500 py-4'>⚠️ " + mensaje + "</p>";
+}
+
+// ===========================
 // AÑADIR UNA TAREA
 // ===========================
-function añadirTarea(titulo, prioridad, dueDate, dependsOn) {
-    const tarea = crearTarea(titulo, prioridad, dueDate, dependsOn);
-    tareas.push(tarea);
-    ordenarPorPrioridad();
-    actualizarUIYPersistencia();
+async function añadirTarea(titulo, prioridad, dueDate, dependsOn) {
+    try {
+        const tarea = await crearTarea(titulo, prioridad);
+        tareas.push(tarea);
+        ordenarPorPrioridad();
+        actualizarUI();
+    } catch (error) {
+        mostrarErrorFormulario(error.message);
+    }
 }
 
 // ===========================
 // ELIMINAR UNA TAREA
 // ===========================
-function eliminarTarea(id) {
-    const tarea = tareas.find(function(t) {
-        return t.id === id;
-    });
+async function eliminarTareaFn(id) {
+    const tarea = obtenerTareaPorId(id);
     if (!tarea) return;
     const confirmado = confirm("¿Estás seguro de que deseas eliminar la tarea: " + tarea.title + "?");
     if (!confirmado) return;
-    tareas = tareas
-        .filter(function(t) { return t.id !== id; })
-        .map(function(t) {
-            if (t.dependsOn && String(t.dependsOn) === String(id)) {
-                t.dependsOn = null;
-            }
-            return t;
-        });
-    actualizarUIYPersistencia();
+    try {
+        await eliminarTarea(id);
+        tareas = tareas
+            .filter(function(t) { return t.id !== id; })
+            .map(function(t) {
+                if (t.dependsOn && String(t.dependsOn) === String(id)) {
+                    t.dependsOn = null;
+                }
+                return t;
+            });
+        actualizarUI();
+    } catch (error) {
+        alert("Error al eliminar la tarea: " + error.message);
+    }
 }
 
 // ===========================
 // COMPLETAR UNA TAREA
 // ===========================
-function completarTarea(id) {
+async function completarTareaFn(id) {
     const tareaObjetivo = obtenerTareaPorId(id);
     if (!tareaObjetivo) return false;
     const nuevaCompletada = !tareaObjetivo.completed;
@@ -145,48 +150,74 @@ function completarTarea(id) {
         alert("No puedes completar esta tarea porque depende de: " + tituloDep);
         return false;
     }
-    tareas = tareas.map(function(t) {
-        if (String(t.id) === String(id)) {
-            t.completed = nuevaCompletada;
-        }
-        return t;
-    });
-    actualizarUIYPersistencia();
-    return true;
+    try {
+        await actualizarTarea(id, { completed: nuevaCompletada });
+        tareas = tareas.map(function(t) {
+            if (String(t.id) === String(id)) {
+                t.completed = nuevaCompletada;
+            }
+            return t;
+        });
+        actualizarUI();
+        return true;
+    } catch (error) {
+        alert("Error al actualizar la tarea: " + error.message);
+        return false;
+    }
 }
 
 // ===========================
 // EDITAR UNA TAREA
 // ===========================
-function editarTarea(id, nuevoTitulo) {
-    tareas = tareas.map(function(tarea) {
-        if (tarea.id === id) {
-            tarea.title = nuevoTitulo;
-        }
-        return tarea;
-    });
-    actualizarUIYPersistencia();
+async function editarTareaFn(id, nuevoTitulo) {
+    try {
+        await actualizarTarea(id, { titulo: nuevoTitulo });
+        tareas = tareas.map(function(tarea) {
+            if (tarea.id === id) {
+                tarea.title = nuevoTitulo;
+            }
+            return tarea;
+        });
+        actualizarUI();
+    } catch (error) {
+        alert("Error al editar la tarea: " + error.message);
+    }
 }
 
 // ===========================
 // COMPLETAR TODAS
 // ===========================
-function completarTodas() {
-    tareas = tareas.map(function(tarea) {
-        tarea.completed = true;
-        return tarea;
-    });
-    actualizarUIYPersistencia();
+async function completarTodas() {
+    try {
+        await Promise.all(tareas.map(function(tarea) {
+            return actualizarTarea(tarea.id, { completed: true });
+        }));
+        tareas = tareas.map(function(tarea) {
+            tarea.completed = true;
+            return tarea;
+        });
+        actualizarUI();
+    } catch (error) {
+        alert("Error al completar todas las tareas: " + error.message);
+    }
 }
 
 // ===========================
 // BORRAR COMPLETADAS
 // ===========================
-function borrarCompletadas() {
-    tareas = tareas.filter(function(tarea) {
-        return tarea.completed === false;
-    });
-    actualizarUIYPersistencia();
+async function borrarCompletadas() {
+    try {
+        const completadas = tareas.filter(function(t) { return t.completed; });
+        await Promise.all(completadas.map(function(tarea) {
+            return eliminarTarea(tarea.id);
+        }));
+        tareas = tareas.filter(function(tarea) {
+            return tarea.completed === false;
+        });
+        actualizarUI();
+    } catch (error) {
+        alert("Error al borrar las tareas completadas: " + error.message);
+    }
 }
 
 // ===========================
@@ -272,7 +303,6 @@ function renderizarTareas() {
         checkbox.checked = tarea.completed;
         nombre.textContent = tarea.title;
 
-        // Estado de prioridad
         if (etiquetaPrioridad) {
             if (tarea.priority === "alta") {
                 etiquetaPrioridad.textContent = "🔴 Alta";
@@ -286,35 +316,32 @@ function renderizarTareas() {
             }
         }
 
-        // Tarea completada
         if (tarea.completed) {
             nombre.style.textDecoration = "line-through";
             nombre.style.color = "gray";
         }
 
-        // Tarea bloqueada por dependencia
         if (esTareaBloqueadaPorDependencia(tarea)) {
             checkbox.disabled = true;
             nombre.style.opacity = "0.5";
         }
 
-        // Editar con doble clic
         nombre.addEventListener("dblclick", function() {
             const nuevoTitulo = prompt("Editar tarea:", tarea.title);
             if (nuevoTitulo && nuevoTitulo.trim() !== "") {
-                editarTarea(tarea.id, nuevoTitulo.trim());
+                editarTareaFn(tarea.id, nuevoTitulo.trim());
             }
         });
 
-        checkbox.addEventListener("change", function() {
-            const permitido = completarTarea(tarea.id);
+        checkbox.addEventListener("change", async function() {
+            const permitido = await completarTareaFn(tarea.id);
             if (!permitido) {
                 checkbox.checked = false;
             }
         });
 
         btnEliminar.addEventListener("click", function() {
-            eliminarTarea(tarea.id);
+            eliminarTareaFn(tarea.id);
         });
 
         lista.appendChild(clone);
@@ -350,41 +377,13 @@ function actualizarStats() {
 }
 
 // ===========================
-// FUNCION CENTRAL
+// FUNCION CENTRAL UI
 // ===========================
-function actualizarUIYPersistencia() {
+function actualizarUI() {
     ordenarPorPrioridad();
     renderizarTareas();
     actualizarStats();
-    guardarTareas();
     actualizarSelectDependencia();
-}
-
-// ===========================
-// GUARDAR EN LOCALSTORAGE
-// ===========================
-function guardarTareas() {
-    localStorage.setItem("tareas", JSON.stringify(tareas));
-}
-
-// ===========================
-// CARGAR DE LOCALSTORAGE
-// ===========================
-function cargarTareas() {
-    const tareasGuardadas = localStorage.getItem("tareas");
-    if (tareasGuardadas) {
-        const parsed = JSON.parse(tareasGuardadas);
-        tareas = Array.isArray(parsed) ? parsed : [];
-        tareas = tareas.map(function(t) {
-            if (!t || typeof t !== "object") return t;
-            if (t.dependsOn === "" || t.dependsOn === undefined) t.dependsOn = null;
-            if (typeof t.completed !== "boolean") t.completed = t.completed === true;
-            if (!t.priority) t.priority = "media";
-            return t;
-        });
-    } else {
-        tareas = [];
-    }
 }
 
 // ===========================
@@ -413,7 +412,7 @@ if (btnDarkMode) {
 // ===========================
 // EVENTOS
 // ===========================
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", async function() {
 
     const formulario = document.getElementById("form-tarea");
     const input = document.getElementById("inputTarea");
@@ -425,7 +424,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     if (formulario) {
-        formulario.addEventListener("submit", function(evento) {
+        formulario.addEventListener("submit", async function(evento) {
             evento.preventDefault();
             const titulo = input.value.trim();
             const selectPrioridad = document.getElementById("selectPrioridad");
@@ -446,7 +445,7 @@ document.addEventListener("DOMContentLoaded", function() {
             limpiarErrorFormulario();
             const prioridad = selectPrioridad ? selectPrioridad.value : "media";
             const dependsOn = selectDependencia && selectDependencia.value ? selectDependencia.value : null;
-            añadirTarea(titulo, prioridad, null, dependsOn);
+            await añadirTarea(titulo, prioridad, null, dependsOn);
             input.value = "";
             if (selectPrioridad) selectPrioridad.value = "media";
             if (selectDependencia) selectDependencia.value = "";
@@ -480,7 +479,12 @@ document.addEventListener("DOMContentLoaded", function() {
         borrarCompletadas();
     });
 
-    // Inicialización
-    cargarTareas();
-    actualizarUIYPersistencia();
+    // Inicialización - carga las tareas desde el servidor
+    try {
+        mostrarCargando();
+        tareas = await obtenerTareas();
+        actualizarUI();
+    } catch (error) {
+        mostrarErrorRed("No se puede conectar con el servidor. Asegúrate de que está arrancado.");
+    }
 });
