@@ -5,9 +5,11 @@ const app = express();
 
 // Middlewares globales
 app.use(cors({
-    origin: 'https://bootcamp-project-ulf4.vercel.app'
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
 }));
-app.use(express.json());
 
 // Middleware de auditoría
 const loggerAcademico = (req, res, next) => {
