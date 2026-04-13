@@ -46,3 +46,9 @@ git clone https://github.com/Guille4618/bootcamp-project.git
 - [Prompt engineering](docs/ai/prompt-engineering.md)
 - [Experimentos con IA](docs/ai/experiments.md)
 - [Reflexión final](docs/ai/reflection.md)
+
+## Backend
+
+El backend está construido con Node.js y Express siguiendo una arquitectura por capas.
+
+### Arquitectura de carpetas
