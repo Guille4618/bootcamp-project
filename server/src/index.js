@@ -4,11 +4,13 @@ const { PORT } = require('./config/env');
 
 const app = express();
 
-//Miiddlewares globales
-app.use(cors());
+// Middlewares globales
+app.use(cors({
+    origin: 'https://bootcamp-project-ulf4.vercel.app'
+}));
 app.use(express.json());
 
-//Middleware de adutoría
+// Middleware de auditoría
 const loggerAcademico = (req, res, next) => {
     const inicio = performance.now();
     res.on('finish', () => {
@@ -19,11 +21,11 @@ const loggerAcademico = (req, res, next) => {
 };
 app.use(loggerAcademico);
 
-//Rutas
+// Rutas
 const taskRoutes = require('./routes/task.routes');
 app.use('/api/tasks', taskRoutes);
 
-//Middleware global de manejo de errores
+// Middleware global de manejo de errores
 app.use((err, req, res, next) => {
     if (err.message === 'NOT_FOUND') {
         return res.status(404).json({ error: 'Tarea no encontrada' });
@@ -32,8 +34,7 @@ app.use((err, req, res, next) => {
     return res.status(500).json({ error: 'Error interno del servidor' });
 });
 
-
-//Arrancar el servidor
+// Arrancar el servidor
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
