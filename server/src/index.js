@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const { PORT } = require('./config/env');
 
 const app = express();
 
@@ -34,7 +33,13 @@ app.use((err, req, res, next) => {
     return res.status(500).json({ error: 'Error interno del servidor' });
 });
 
-// Arrancar el servidor
-app.listen(PORT, () => {
-    console.log(`Servidor corriendo en el puerto ${PORT}`);
-});
+// Para desarrollo local
+if (process.env.NODE_ENV !== 'production') {
+    const { PORT } = require('./config/env');
+    app.listen(PORT, () => {
+        console.log(`Servidor corriendo en el puerto ${PORT}`);
+    });
+}
+
+// Para Vercel
+module.exports = app;
