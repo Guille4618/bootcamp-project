@@ -1,4 +1,4 @@
-const API_URL = 'https://bootcamp-project-ulf4.vercel.app/api/tasks';
+const API_URL = 'https://bootcamp-project-547b.vercel.app/api/tasks';
 
 async function obtenerTareas() {
     const response = await fetch(API_URL);
