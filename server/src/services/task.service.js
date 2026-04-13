@@ -20,7 +20,7 @@ function obtenerTodas() {
  */
 function crearTarea(data) {
     const tarea = {
-        id: require('crypto').randomUUID(),
+        id: Math.random().toString(36).substr(2, 9) + Date.now().toString(36),
         title: data.titulo.trim(),
         completed: false,
         priority: data.prioridad || 'media',
