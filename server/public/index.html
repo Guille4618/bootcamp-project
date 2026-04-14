@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    <style>
+        *:focus {
+            outline: 3px solid #4a90e2;
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 min-h-screen flex flex-col">
+
+    <!-- Cabecera -->
+    <header class="bg-blue-500 dark:bg-blue-900 text-white p-4 md:p-6 text-center relative">
+        <h1 class="text-2xl md:text-3xl font-bold">TaskFlow</h1>
+    </header>
+
+    <!-- Botón modo oscuro -->
+    <button id="btn-dark-mode" aria-label="Activar o desactivar modo oscuro" class="fixed top-4 right-4 w-10 h-10 rounded-full bg-blue-700 dark:bg-yellow-400 flex items-center justify-center text-xl shadow-lg hover:scale-110 transition-transform z-50">
+        🌙
+    </button>
+
+    <!-- Contenido principal -->
+    <main class="flex flex-col md:flex-row flex-1 gap-4 md:gap-6 p-4 md:p-6 max-w-6xl mx-auto w-full">
+
+        <!-- Secciones izquierda -->
+        <div class="flex-1 flex flex-col gap-4 md:gap-6">
+
+            <!-- Formulario -->
+            <section class="bg-white dark:bg-gray-800 rounded-lg p-4 md:p-6 shadow">
+                <h2 class="text-xl font-semibold text-blue-500 mb-4">Añadir tarea</h2>
+                <form id="form-tarea" class="flex flex-col gap-2" novalidate>
+
+                    <!-- Input principal -->
+                    <div class="flex flex-col sm:flex-row gap-2">
+                        <label for="inputTarea" class="sr-only">Nueva tarea</label>
+                        <input 
+                            type="text" 
+                            id="inputTarea" 
+                            name="inputTarea" 
+                            placeholder="Escribe una tarea..." 
+                            aria-describedby="error-tarea"
+                            class="flex-1 px-4 py-2 text-base border border-gray-300 rounded focus:outline-none focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                        >
+                        <div class="flex gap-2">
+                            <select 
+                                id="selectPrioridad"
+                                class="flex-1 sm:flex-none px-3 py-2 text-sm md:text-base border border-gray-300 rounded focus:outline-none focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                            >
+                                <option value="alta">🔴 Alta</option>
+                                <option value="media" selected>🟡 Media</option>
+                                <option value="baja">🟢 Baja</option>
+                            </select>
+                            <button 
+                                type="submit"
+                                aria-label="Añadir nueva tarea"
+                                class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 whitespace-nowrap"
+                            >
+                                Añadir
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Dependencia -->
+                    <div class="flex flex-col sm:flex-row gap-2 items-start sm:items-center">
+                        <label for="selectDependencia" class="text-sm dark:text-white whitespace-nowrap">Depende de:</label>
+                        <select
+                            id="selectDependencia"
+                            name="selectDependencia"
+                            aria-label="Dependencia opcional"
+                            class="w-full flex-1 px-4 py-2 text-sm md:text-base border border-gray-300 rounded focus:outline-none focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                        >
+                            <option value="">No depende de nadie</option>
+                        </select>
+                    </div>
+
+                    <p id="error-tarea" class="text-sm text-red-600 dark:text-red-400 min-h-[1.25rem]" aria-live="polite"></p>
+                </form>
+            </section>
+
+            <!-- Lista de tareas -->
+            <section class="bg-white dark:bg-gray-800 rounded-lg p-4 md:p-6 shadow">
+                <h2 class="text-xl font-semibold text-blue-500 mb-4">Lista de tareas</h2>
+
+                <!-- Filtros -->
+                <div id="filtros" class="flex gap-2 mb-4 flex-wrap">
+                    <button id="btn-todas" aria-label="Mostrar todas las tareas" class="px-3 py-2 text-sm md:px-4 md:text-base bg-blue-500 text-white rounded hover:bg-blue-600">Todas</button>
+                    <button id="btn-pendientes" aria-label="Mostrar tareas pendientes" class="px-3 py-2 text-sm md:px-4 md:text-base bg-blue-500 text-white rounded hover:bg-blue-600">Pendientes</button>
+                    <button id="btn-completadas" aria-label="Mostrar tareas completadas" class="px-3 py-2 text-sm md:px-4 md:text-base bg-blue-500 text-white rounded hover:bg-blue-600">Completadas</button>
+                </div>
+
+                <!-- Búsqueda -->
+                <div id="busqueda" class="mb-4">
+                    <label for="inputBusqueda" class="block mb-1 text-sm dark:text-white">Buscar tarea:</label>
+                    <input 
+                        type="text" 
+                        id="inputBusqueda" 
+                        placeholder="Buscar..."
+                        aria-label="Buscar tareas por texto"
+                        class="w-full px-4 py-2 text-base border border-gray-300 rounded focus:outline-none focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                    >
+                </div>
+
+                <!-- Botones extra -->
+                <div id="botones-extra" class="flex gap-2 mb-4 flex-wrap">
+                    <button id="btn-completar-todas" aria-label="Marcar todas las tareas como completadas" class="px-3 py-2 text-sm md:px-4 md:text-base bg-green-500 text-white rounded hover:bg-green-600">Completar todas</button>
+                    <button id="btn-borrar-completadas" aria-label="Borrar todas las tareas completadas" class="px-3 py-2 text-sm md:px-4 md:text-base bg-red-500 text-white rounded hover:bg-red-600">Borrar completadas</button>
+                </div>
+
+                <!-- Lista -->
+                <ul id="lista-tareas" class="flex flex-col gap-2">
+                </ul>
+
+            </section>
+
+        </div>
+
+        <!-- Panel lateral estadísticas -->
+        <aside class="w-full md:w-64 bg-white dark:bg-gray-800 rounded-lg p-4 md:p-6 shadow h-fit">
+            <h2 class="text-xl font-semibold text-blue-500 mb-4">Estadísticas</h2>
+            <p class="mb-2 dark:text-white">Total de tareas: <span id="total" class="font-bold">0</span></p>
+            <p class="mb-2 dark:text-white">Completadas: <span id="completadas" class="font-bold text-green-500">0</span></p>
+            <p class="mb-2 dark:text-white">Pendientes: <span id="pendientes" class="font-bold text-red-500">0</span></p>
+
+            <!-- Barra de progreso -->
+            <div class="mt-4">
+                <div class="flex justify-between mb-1">
+                    <span class="text-sm dark:text-white">Progreso</span>
+                    <span id="porcentaje" class="text-sm font-bold text-blue-500">0%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-3">
+                    <div id="barra-progreso" class="bg-blue-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+            </div>
+        </aside>
+
+    </main>
+
+    <!-- Plantilla base para cada tarea -->
+    <template id="plantilla-tarea">
+        <li class="flex flex-wrap items-center gap-2 md:gap-4 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-3 md:p-4 shadow">
+            <input type="checkbox" aria-label="Marcar tarea como completada" class="w-5 h-5 cursor-pointer flex-shrink-0">
+            <span class="nombre-tarea flex-1 text-sm md:text-base dark:text-white min-w-0 break-words"></span>
+            <span class="etiqueta-prioridad text-xs px-2 py-1 rounded flex-shrink-0"></span>
+            <button class="btn-eliminar px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm flex-shrink-0" aria-label="Eliminar tarea">Eliminar</button>
+        </li>
+    </template>
+
+    <!-- Pie de página -->
+    <footer class="bg-blue-500 dark:bg-blue-900 text-white text-center p-4">
+        <p>TaskFlow &copy; 2024</p>
+    </footer>
+
+    <!-- API Client integrado -->
+    <script>
+        const API_URL = 'https://bootcamp-project-547b.vercel.app/api/tasks';
+
+        async function obtenerTareas() {
+            const response = await fetch(API_URL);
+            if (!response.ok) throw new Error('Error al obtener las tareas');
+            return response.json();
+        }
+
+        async function crearTarea(titulo, prioridad) {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ titulo, prioridad })
+            });
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || 'Error al crear la tarea');
+            }
+            return response.json();
+        }
+
+        async function actualizarTarea(id, datos) {
+            const response = await fetch(`${API_URL}/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(datos)
+            });
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || 'Error al actualizar la tarea');
+            }
+            return response.json();
+        }
+
+        async function eliminarTarea(id) {
+            const response = await fetch(`${API_URL}/${id}`, {
+                method: 'DELETE'
+            });
+            if (!response.ok) throw new Error('Error al eliminar la tarea');
+        }
+    </script>
+
+    <script src="app.js"></script>
+
+</body>
+</html>

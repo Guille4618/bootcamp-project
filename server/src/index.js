@@ -1,15 +1,14 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 
 const app = express();
 
 // Middlewares globales
 app.use(cors({
     origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true
 }));
+app.use(express.json());
 
 // Middleware de auditoría
 const loggerAcademico = (req, res, next) => {
